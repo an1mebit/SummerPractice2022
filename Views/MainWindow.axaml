@@ -1,0 +1,119 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:TelegaApp.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450" MinWidth="865" MinHeight="450"
+        x:Class="TelegaApp.Views.MainWindow"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="TelegaApp"
+		Background="Transparent"
+		TransparencyLevelHint="Mica"
+		ExtendClientAreaToDecorationsHint="True">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+	
+	<Grid>
+		<Grid.DataContext>
+			<vm:MainWindowViewModel/>
+		</Grid.DataContext>
+
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		
+		<ExperimentalAcrylicBorder IsHitTestVisible="False">
+			<ExperimentalAcrylicBorder.Material>
+				<ExperimentalAcrylicMaterial
+					BackgroundSource="Digger"
+					TintColor="White"
+					TintOpacity="1"
+					MaterialOpacity="0.45"/>
+			</ExperimentalAcrylicBorder.Material>
+		</ExperimentalAcrylicBorder>
+
+
+		<StackPanel Grid.Column="0" Orientation="Vertical">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock 
+					Margin="20,0,0,0"
+					Text="Red"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"/>
+				<Slider
+					Margin="20"
+					Minimum="0"
+					Maximum="255"
+					Width="200"
+					Background="Gray"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal">
+				<TextBlock
+					Margin="20,0,0,0"
+					Text="Green"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"/>
+				<Slider
+					Margin="8"
+					Minimum="0"
+					Maximum="255"
+					Width="200"
+					Background="Gray"/>
+			</StackPanel>
+			<StackPanel Orientation="Horizontal">
+				<TextBlock
+					Margin="20,0,0,0"
+					Text="Blue"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"/>
+				<Slider
+					Margin="20"
+					Minimum="0"
+					Maximum="255"
+					Width="200"
+					Background="Gray"/>
+			</StackPanel>
+		</StackPanel>
+
+		<StackPanel Grid.Column="1" Orientation="Vertical">
+			<Image
+				x:Name="imageBox"
+				HorizontalAlignment="Center"
+				Margin="40"
+				MinWidth="300"
+				MinHeight="250"
+				Source="{Binding ImageBox}"/>
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+				<Button
+					Width="70"
+					Click="SetOrigin"
+					Height="25"
+					Background="White"
+					FontSize="10"
+					FontWeight="DemiBold"
+					Foreground="Black"
+					Content="{Binding Origin}"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"/>
+				<Button
+					Width="70"
+					Click="SetMask"
+					Height="25"
+					Background="White"
+					FontSize="10"
+					FontWeight="DemiBold"
+					Foreground="Black"
+					Content="{Binding Mask}"
+					HorizontalContentAlignment="Center"
+					VerticalContentAlignment="Center"
+					Margin="15,0,0,0"/>
+			</StackPanel>
+			
+		</StackPanel>
+
+	</Grid>
+
+</Window>
