@@ -3,12 +3,18 @@ using TelegaApp.Models;
 using Avalonia.Threading;
 using System;
 using Avalonia.Interactivity;
+using Avalonia.VisualTree;
+using Avalonia.Styling;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace TelegaApp.Views
 {
     public partial class MainWindow : Window
     {
         private RecognitionModel rec { get; set; }
+
+        private List<string> checkBoxesChecked = new List<string>();
 
         private int isButtonChanged = 0;
 
@@ -26,15 +32,15 @@ namespace TelegaApp.Views
 
         public void record(object? sender, EventArgs e)
         {
-            if (rec.GetImage() != null && isButtonChanged == 0)
+            if (isButtonChanged == 0)
             {
-                imageBox.Source = (Avalonia.Media.IImage)rec.GetImage();
+                imageBox.Source = (Avalonia.Media.IImage)rec.GetImage(checkBoxesChecked);
             }
             else
             {
-                imageBox.Source = (Avalonia.Media.IImage)rec.GetMask();
+                imageBox.Source = (Avalonia.Media.IImage)rec.GetMask(checkBoxesChecked);
             }
-            InvalidateVisual();
+            InvalidateVisual();   
         }
 
         private void SetOrigin(object sender, RoutedEventArgs e)
@@ -45,6 +51,45 @@ namespace TelegaApp.Views
         private void SetMask(object sender, RoutedEventArgs e)
         {
             isButtonChanged = 1;
+        }
+
+        private void RedCheck(object sender, RoutedEventArgs e)
+        {
+            GetCheckBoxCollection();
+        }
+        private void GreenCheck(object sender, RoutedEventArgs e)
+        {
+            GetCheckBoxCollection();
+        }
+        private void BlueCheck(object sender, RoutedEventArgs e)
+        {
+            GetCheckBoxCollection();
+        }
+        private void PurpleCheck(object sender, RoutedEventArgs e)
+        {
+            GetCheckBoxCollection();
+        }
+        private void YellowCheck(object sender, RoutedEventArgs e)
+        {
+            GetCheckBoxCollection();
+        }
+        private void GetCheckBoxCollection()
+        {
+            var list = grid.Children.OfType<CheckBox>();
+            foreach (var chbox in list)
+            {
+                if (chbox.Name != null)
+                {
+                    if (chbox.IsChecked == true)
+                    {
+                        checkBoxesChecked.Add(chbox.Name);
+                    }
+                    else
+                    {
+                        checkBoxesChecked.Remove(chbox.Name);
+                    }
+                }
+            }
         }
     }
 }

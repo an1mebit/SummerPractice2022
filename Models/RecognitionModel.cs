@@ -1,11 +1,11 @@
 ﻿using Emgu.CV.Structure;
 using Emgu.CV;
 using Emgu.CV.Util;
-using Avalonia.Media.Imaging;
 using System;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Drawing;
+using System.Collections.Generic;
 
 namespace TelegaApp.Models
 {
@@ -13,8 +13,25 @@ namespace TelegaApp.Models
     {
         private VideoCapture? cap;
 
+        Dictionary<string, int[,]> collor;
+
         public RecognitionModel()
         {
+            int[,] red = { { 0, 150, 130 }, { 10,255,255} };
+            int[,] green = { { 45, 170, 150 }, { 65, 255, 255 } };
+            int[,] blue = { { 90, 130, 100 }, { 130, 255, 255 } };
+            int[,] purple = { { 145, 150, 100 }, { 160, 255, 255 } };
+            int[,] yellow = { { 26, 150, 100 }, { 36, 255, 255 } };
+
+            collor = new Dictionary<string, int[,]>()
+            {
+                {"Red", red },
+                {"Green" , green },
+                {"Blue", blue },
+                {"Purple", purple },
+                {"Yellow", yellow }
+            };
+
             if (cap != null)
             {
                 cap.Start();
@@ -36,7 +53,7 @@ namespace TelegaApp.Models
             }
         }
 
-        public Avalonia.Media.Imaging.Bitmap GetImage()
+        public Avalonia.Media.Imaging.Bitmap GetImage(List<string> checkBoxesChecked)
         {
             if (cap != null)
             {
@@ -44,17 +61,18 @@ namespace TelegaApp.Models
                 cap.Retrieve(mat);
                 var oldImage = cap.QueryFrame().ToImage<Bgr, byte>();
 
-                VectorOfVectorOfPoint use_contours = getContours(cap.QueryFrame().ToImage<Hsv, byte>());
-                //CvInvoke.DrawContours(oldImage, use_contours, -1, new MCvScalar(255, 0, 0));
-
-                Point[] gravity = new Point[use_contours.Size];
-                gravity = GetPoints(use_contours);
-
-                foreach (Point cent in gravity)
+                for (int i = 0; i < checkBoxesChecked.Count; i++)
                 {
-                    CvInvoke.Circle(oldImage, cent, 2, new MCvScalar(0, 0, 255), 2);
-                }
+                    VectorOfVectorOfPoint use_contours = getContours(oldImage.Convert<Hsv, byte>(), checkBoxesChecked[i]);
 
+                    Point[] gravity = new Point[use_contours.Size];
+                    gravity = GetPoints(use_contours);
+
+                    foreach (Point cent in gravity)
+                    {
+                        CvInvoke.Circle(oldImage, cent, 2, new MCvScalar(0, 0, 255), 2);
+                    }
+                }
                 var imageBmp = oldImage.ToBitmap();
 
                 Avalonia.Media.Imaging.Bitmap avalonBmp;
@@ -74,19 +92,28 @@ namespace TelegaApp.Models
             }
         }
 
-        public Avalonia.Media.Imaging.Bitmap GetMask()
+        public Avalonia.Media.Imaging.Bitmap GetMask(List<string> checkBoxesChecked)
         {
             if (cap != null)
             {
-                Image<Hsv, byte> rgbImage = cap.QueryFrame().ToImage<Hsv,byte>();
+                Mat multiMask = Mat.Zeros(cap.QueryFrame().Rows, cap.QueryFrame().Cols, Emgu.CV.CvEnum.DepthType.Cv8U, cap.QueryFrame().NumberOfChannels);
+                var old = cap.QueryFrame().ToImage<Bgr, byte>();
+                Image<Hsv, byte> rgbImage = old.Convert<Hsv, byte>();
 
-                var image = rgbImage.InRange(new Hsv(95, 80, 2), new Hsv(126, 255, 255));
-                image = image.Convert<Gray, byte>();
-                var mask = image.ThresholdBinary(new Gray(150), new Gray(255));
-                mask = mask.Canny(75, 200);
+                Image<Gray, byte> oldmask = null;
+                for (int i = 0; i < checkBoxesChecked.Count; i++)
+                {
+                    var hsv = collor[checkBoxesChecked[i]];
 
+                    var image = rgbImage.InRange(new Hsv(hsv[0, 0], hsv[0, 1], hsv[0, 2]), new Hsv(hsv[1, 0], hsv[1, 1], hsv[1, 2]));
 
-                var imageBmp = mask.ToBitmap();
+                    var mask = image.Dilate(3);
+                    if (i > 0 && oldmask != null)
+                        CvInvoke.BitwiseOr(mask, oldmask, multiMask);
+                    oldmask = mask;
+                }
+                
+                var imageBmp = multiMask.ToBitmap();
 
                 Avalonia.Media.Imaging.Bitmap avalonBmp;
 
@@ -105,13 +132,12 @@ namespace TelegaApp.Models
             }
         }
 
-        private VectorOfVectorOfPoint getContours(Image<Hsv,byte> rgbImage)
+        private VectorOfVectorOfPoint getContours(Image<Hsv,byte> rgbImage, string color)
         {
-            var image = rgbImage.InRange(new Hsv(95, 80, 2), new Hsv(126, 255, 255));
-            image = image.Convert<Gray, byte>();
-            var mask = image.ThresholdBinary(new Gray(150), new Gray(255));
-            //CvInvoke.BilateralFilter(mask, mask, 5, 175, 175);
-            mask = mask.Canny(75, 200);
+            var hsv = collor[color];
+            var image = rgbImage.InRange(new Hsv(hsv[0,0], hsv[0,1], hsv[0,2]), new Hsv(hsv[1,0], hsv[1,1], hsv[1,2]));
+
+            var mask = image.Dilate(3);
 
             VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint();
             Mat hierachy = new Mat();
@@ -144,7 +170,6 @@ namespace TelegaApp.Models
             for (int i = 0; i < ksize; i++)
             {
                 VectorOfPoint contour = use_contours[i];
-                // Рассчитываем момент текущего контура
                 moments[i] = CvInvoke.Moments(contour, false);
 
                 m00[i] = moments[i].M00;

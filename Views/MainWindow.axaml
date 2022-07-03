@@ -37,45 +37,80 @@
 
 
 		<StackPanel Grid.Column="0" Orientation="Vertical">
-			<StackPanel Orientation="Horizontal">
-				<TextBlock 
+			<Grid x:Name="grid">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="100"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="50"/>
+					<RowDefinition Height="50"/>
+					<RowDefinition Height="50"/>
+					<RowDefinition Height="50"/>
+					<RowDefinition Height="50"/>
+				</Grid.RowDefinitions>
+
+				<TextBlock
 					Margin="20,0,0,0"
 					Text="Red"
 					VerticalAlignment="Center"
-					HorizontalAlignment="Center"/>
-				<Slider
-					Margin="20"
-					Minimum="0"
-					Maximum="255"
-					Width="200"
-					Background="Gray"/>
-			</StackPanel>
-			<StackPanel Orientation="Horizontal">
+					HorizontalAlignment="Center"
+					Grid.Column="0"
+					Grid.Row="0"/>
 				<TextBlock
 					Margin="20,0,0,0"
 					Text="Green"
 					VerticalAlignment="Center"
-					HorizontalAlignment="Center"/>
-				<Slider
-					Margin="8"
-					Minimum="0"
-					Maximum="255"
-					Width="200"
-					Background="Gray"/>
-			</StackPanel>
-			<StackPanel Orientation="Horizontal">
+					HorizontalAlignment="Center"
+					Grid.Column="0"
+					Grid.Row="1"/>
 				<TextBlock
 					Margin="20,0,0,0"
 					Text="Blue"
 					VerticalAlignment="Center"
-					HorizontalAlignment="Center"/>
-				<Slider
-					Margin="20"
-					Minimum="0"
-					Maximum="255"
-					Width="200"
-					Background="Gray"/>
-			</StackPanel>
+					HorizontalAlignment="Center"
+					Grid.Column="0"
+					Grid.Row="2"/>
+				<TextBlock
+					Margin="20,0,0,0"
+					Text="Purple"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					Grid.Column="0"
+					Grid.Row="3"/>
+				<TextBlock
+					Margin="20,0,0,0"
+					Text="Yellow"
+					VerticalAlignment="Center"
+					HorizontalAlignment="Center"
+					Grid.Column="0"
+					Grid.Row="4"/>
+				<CheckBox
+					Click="RedCheck"
+					Name="Red"
+					Grid.Column="1"
+					Grid.Row="0"/>
+				<CheckBox
+					Click="GreenCheck"
+					Name="Green"
+					Grid.Column="1"
+					Grid.Row="1"/>
+				<CheckBox
+					Click="BlueCheck"
+					Name="Blue"
+					Grid.Column="1"
+					Grid.Row="2"/>
+				<CheckBox
+					Click="PurpleCheck"
+					Name="Purple"
+					Grid.Column="1"
+					Grid.Row="3"/>
+				<CheckBox
+					Click="YellowCheck"
+					Name="Yellow"
+					Grid.Column="1"
+					Grid.Row="4"/>
+			</Grid>
 		</StackPanel>
 
 		<StackPanel Grid.Column="1" Orientation="Vertical">
